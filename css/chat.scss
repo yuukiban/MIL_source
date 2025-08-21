@@ -1,89 +1,69 @@
-:root {
-    --bg: #0f172a;
-    --panel: #0b1223;
-    --ink: #e5e7eb;
-    --muted: #9ca3af;
-    --accent: #60a5fa;
-    --border: rgba(255, 255, 255, .16);
-}
+@charset "utf-8";
+@use "theme" as *;
 
-* {
-    box-sizing: border-box;
-}
-
-html,
-body {
-    height: 100%;
-}
-
-body {
-    margin: 0;
-    background: radial-gradient(1200px 600px at 50% -200px, #16213a 0%, var(--bg) 60%);
-    color: var(--ink);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
-    display: grid;
-    place-items: center;
-    padding: 20px;
-}
-
+/* ===== Chat Page ===== */
 .chat {
     width: min(860px, 94vw);
-    background: linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .02));
-    border: 1px solid var(--border);
-    border-radius: 16px;
+    @include card;
     padding: 14px;
     display: grid;
     gap: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    background: linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .02));
 
     &__title {
+        @include h1-grad; // ピンクのグラデ文字
         margin: 4px 6px 6px;
-        font-weight: 800;
-        letter-spacing: .02em;
+        text-align: left;
     }
 
     &__room {
         display: grid;
-        grid-template-rows: 56vh auto;
+        grid-template-rows: 56vh auto; // 上:ログ/下:フォーム
         gap: 10px;
     }
 }
 
+/* メッセージリスト */
 .messages {
     overflow: auto;
-    background: rgba(255, 255, 255, .02);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    @include card;
     padding: 10px;
+    background: rgba(255, 255, 255, .03);
+    border-color: rgba($main, .25);
 }
 
+/* 1件のメッセージ */
 .msg {
     display: grid;
     grid-template-columns: 1fr max-content;
     align-items: end;
     gap: 6px;
-    background: rgba(255, 255, 255, .03);
-    border: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(255, 255, 255, .10);
     padding: 8px 10px;
-    border-radius: 10px;
+    border-radius: 12px;
     margin-bottom: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
 
     &__name {
-        font-weight: 800;
+        font-weight: 900;
         margin-bottom: 2px;
+        color: $main-200;
     }
 
     &__text {
         white-space: pre-wrap;
         word-break: break-word;
+        color: $ink;
     }
 
     &__meta {
         font-size: 12px;
-        color: var(--muted);
+        color: $muted;
     }
 }
 
+/* 入力フォーム */
 .form {
     display: grid;
     grid-template-columns: 12ch 1fr max-content;
@@ -93,49 +73,85 @@ body {
     input,
     button {
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, .14);
+        border: 1px solid rgba(255, 255, 255, .16);
         background: transparent;
-        color: var(--ink);
+        color: $ink;
         padding: 10px 12px;
         font-size: 14px;
     }
 
-    input::placeholder {
-        color: var(--muted);
+    input {
+        background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+
+        &::placeholder {
+            color: $muted;
+        }
+
+        &:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba($main, .45);
+            border-color: rgba($main, .55);
+        }
     }
 
-    button {
-        font-weight: 700;
-        cursor: pointer;
-        transition: background .2s ease, transform .06s ease, border-color .2s ease;
-        background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .02));
-
-        &:hover {
-            background: linear-gradient(180deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .04));
-            border-color: rgba(255, 255, 255, .28);
-        }
-
-        &:active {
-            transform: translateY(1px) scale(.99);
-        }
+    #send {
+        @include btn-main; // ピンク基調ボタン
+        padding: 10px 14px;
     }
 
     .hint {
-        color: var(--muted);
+        color: $muted;
         font-size: 12px;
         margin: 0 6px;
     }
 
     .error {
-        color: #f87171;
+        color: $female;
         font-size: 12px;
         margin-left: 6px;
     }
+
+    // エラーは赤系
 }
 
-/* アニメーション配慮 */
+/* 下部ナビ（トップ/相性/クイズへのボタン） */
+a {
+    text-decoration: none;
+}
+
+.move,
+a.move {
+    @include btn-main;
+    font-size: clamp(14px, 2.6vw, 16px);
+    margin: 10px 6px;
+    display: inline-flex;
+}
+
+/* レスポンシブ最適化 */
+@media (max-width: 720px) {
+    .form {
+        grid-template-columns: 1fr; // 縦積み
+
+        #send {
+            width: 100%;
+        }
+    }
+
+    .chat__title {
+        text-align: center;
+    }
+
+    .move {
+        width: calc(100% - 12px);
+        justify-content: center;
+    }
+}
+
+/* 省エネモード配慮 */
 @media (prefers-reduced-motion: reduce) {
-    .form button {
+
+    .move,
+    #send {
         transition: none;
     }
 }

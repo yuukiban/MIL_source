@@ -28,7 +28,7 @@ function selectRandomPerson() {
     var randomValue = dict[randomKey];
     $(".key").text(randomKey);
     $(".value").text("No " + randomValue + " No Life");
-    $(".key").css("color", "#e8f0ff");
+    $(".key").css("color", "black");
     $("#gpt-opinion").text("---------------------");
 }
 
@@ -39,7 +39,7 @@ $("button.next").on("click", function () {
 });
 
 $("button.answer").on("click", function () {
-    $(".key").css("color", "black");
+    $(".key").css("color", "white");
 });
 
 $("button.opinion").on("click", function () {
@@ -59,14 +59,27 @@ $("button.opinion").on("click", function () {
                 }
             ]
         }),
+
+        timeout: 20000,
+
+        beforeSend: function () {
+            $("#gpt-opinion").text("考え中…");
+        },
         success: function (data) {
             const opinion = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
                 || "見解を取得できませんでした。";
             $("#gpt-opinion").text(opinion);
         },
         error: function (xhr, status, error) {
-            console.error(error);
-            $("#gpt-opinion").text("エラーが発生しました。");
+            if (status === "timeout") {
+                $("#gpt-opinion").text("タイムアウトしました。時間を置いて再実行してください。");
+            } else if (status === "abort") {
+                $("#gpt-opinion").text("リクエストが中断されました。");
+            } else {
+                console.error(error);
+                $("#gpt-opinion").text("エラーが発生しました。");
+            }
         }
     });
+
 });

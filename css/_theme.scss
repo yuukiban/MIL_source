@@ -1,0 +1,306 @@
+@charset "utf-8";
+
+// ========== TOKENS ==========
+$main: #ff5aa7; // ★ポップなピンク（メイン）
+$main-600: #ff3f98;
+$main-400: #ff77b7;
+$main-200: #ffc2dd;
+
+$bg-deep: #0f0a12; // 濃い背景（映える）
+$bg-grad-top: #1a0f1b; // 上部の淡い紫寄り
+$surface: rgba(255, 255, 255, 0.04);
+$panel: rgba(255, 255, 255, 0.06);
+$ink: #ffffff;
+$muted: rgba(255, 255, 255, 0.72);
+$border: rgba(255, 255, 255, 0.18);
+$shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+// 補色（既存との共存用）
+$male: #60a5fa; // 既存の男色（matching用）
+$female: #f87171; // 既存の女色（matching用）
+
+// ========== MIXINS ==========
+@mixin card {
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: 16px;
+    box-shadow: $shadow;
+}
+
+@mixin btn-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: 1px solid $border;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .03));
+    color: $ink;
+    font-weight: 800;
+    letter-spacing: .02em;
+    cursor: pointer;
+    transition: transform .06s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease, filter .2s ease;
+    text-decoration: none; // <a>でも同じ見た目
+
+    &:hover {
+        transform: translateY(-1px);
+        background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .06));
+        border-color: rgba(255, 255, 255, .3);
+    }
+
+    &:active {
+        transform: translateY(1px) scale(.99);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba($main, .45);
+    }
+}
+
+@mixin btn-main {
+    @include btn-base;
+    background-image: linear-gradient(90deg, rgba($main, .30), rgba($main-400, .26));
+    border-color: rgba($main, .55);
+}
+
+@mixin h1-grad {
+    margin: 0 0 10px;
+    font-weight: 900;
+    letter-spacing: .02em;
+    font-size: clamp(24px, 4.8vw, 40px);
+    background: linear-gradient(90deg, $main, $main-400);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+// ========== GLOBAL ==========
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    color: $ink;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+    background: radial-gradient(1200px 600px at 50% -200px, $bg-grad-top 0%, $bg-deep 60%);
+}
+
+// 汎用ボタン（全ページで共通）
+.move,
+a.move,
+.btn-main {
+    @include btn-main;
+}
+
+// ページ下部のリンク群間隔
+.link-group>a {
+    margin: 6px 8px;
+}
+
+// ツールチップ＆モーダルの共通トーン
+.tooltip {
+    position: fixed;
+    z-index: 60;
+    @include card;
+    background: rgba(30, 0, 25, .88);
+    border-color: rgba($main, .35);
+    padding: 10px 12px;
+    border-radius: 12px;
+    max-width: min(62ch, 72vw);
+
+    .tt-name {
+        font-weight: 900;
+    }
+
+    .tt-value {
+        color: $muted;
+        font-size: 13px;
+    }
+
+    .tt-scores {
+        font-size: 12px;
+        opacity: .9;
+    }
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: none;
+
+    &.is-open {
+        display: block;
+    }
+
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, .55);
+        backdrop-filter: blur(2px);
+    }
+
+    &__dialog {
+        position: relative;
+        @include card;
+        width: min(690px, 92vw);
+        margin: 8vh auto 0;
+        padding: 16px;
+    }
+
+    &__title {
+        margin: 0 0 8px;
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: .01em;
+    }
+
+    &__close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid $border;
+        background: transparent;
+        color: $ink;
+        cursor: pointer;
+
+        &:hover {
+            background: rgba(255, 255, 255, .08);
+        }
+    }
+
+    &__pair {
+        display: grid;
+        grid-template-columns: 1fr max-content 1fr;
+        gap: 8px;
+        align-items: center;
+        background: rgba(255, 255, 255, .04);
+        border: 1px solid $border;
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+
+        .sep {
+            color: $muted;
+            font-weight: 900;
+        }
+
+        .p1,
+        .p2 {
+            font-weight: 800;
+        }
+    }
+
+    &__body .rank-badge {
+        display: inline-block;
+        min-width: 2.2em;
+        text-align: center;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-weight: 900;
+        border: 1px solid rgba(255, 255, 255, .2);
+        background: rgba($main, .16);
+        color: $main;
+    }
+}
+
+// シャッター（index のオープニングをピンク基調に）
+.shutter {
+    position: fixed;
+    inset: 0;
+    background-color: $main;
+    z-index: 9999;
+    animation: byeShutter 2.6s forwards;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        margin: auto;
+        background-color: #fff;
+        width: 0;
+        height: 1px;
+        animation: shutterOpen 2.6s forwards;
+    }
+
+    .shutter-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: "Noto Serif JP", serif;
+        font-size: 4rem;
+        font-weight: 900;
+        color: white;
+        letter-spacing: .15em;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, .3);
+        animation: loveText 2.6s forwards;
+    }
+}
+
+@keyframes loveText {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.6);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    70% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+}
+
+@keyframes byeShutter {
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        display: none;
+        z-index: -1;
+    }
+}
+
+@keyframes shutterOpen {
+    0% {
+        width: 0;
+        height: 1px;
+    }
+
+    50% {
+        width: 100%;
+        height: 1px;
+    }
+
+    90% {
+        width: 100%;
+        height: 100%;
+    }
+
+    100% {
+        width: 100%;
+        height: 100%;
+    }
+}

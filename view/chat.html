@@ -9,32 +9,38 @@
 </head>
 
 <body>
-    <div class="chat">
-        <div class="chat__title">💬 掲示板(o^―^o)ﾆｺ</div>
+    <div class="shutter">
+        <span class="shutter-text">I want to communicate with you</span>
+    </div>
 
-        <div class="chat__room">
-            <div class="messages" id="messages" aria-live="polite"></div>
+    <section class="container">
+        <div class="chat">
+            <div class="chat__title">💬 掲示板(o^―^o)ﾆｺ</div>
 
-            <form class="form" id="chat-form" autocomplete="off">
-                <input id="name" type="text" placeholder="名前" required />
-                <input id="text" type="text" placeholder="メッセージを入力" required />
-                <button id="send" type="submit">送信</button>
-                <div class="hint">Enter で送信・Shift+Enter で改行</div>
-                <div class="error" id="err" hidden></div>
-            </form>
+            <div class="chat__room">
+                <div class="messages" id="messages" aria-live="polite"></div>
+
+                <form class="form" id="chat-form" autocomplete="off">
+                    <input id="name" type="text" placeholder="名前" required />
+                    <input id="text" type="text" placeholder="メッセージを入力" required />
+                    <button id="send" type="submit">送信</button>
+                    <div class="hint">Enter で送信・Shift+Enter で改行</div>
+                    <div class="error" id="err" hidden></div>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <a href="./quiz.html">
-        <button class="move">クイズページへ</button>
-    </a>
-    <a href="./matching.html">
-        <button class="move">相性ページへ</button>
-    </a>
-    <a href="../index.html">
-        <button class="move">トップページへ</button>
-    </a>
-    </div>
+        <a href="./quiz.html">
+            <button class="move">クイズページへ</button>
+        </a>
+        <a href="./matching.html">
+            <button class="move">相性ページへ</button>
+        </a>
+        <a href="../index.html">
+            <button class="move">トップページへ</button>
+        </a>
+        </div>
+    </section>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>

@@ -1,46 +1,27 @@
-// ===== カラートークン =====
-$bg: #0f172a;
-$panel: #0b1223;
-$ink: #e5e7eb;
-$muted: #9ca3af;
-$grid: rgba(255, 255, 255, 0.1);
-$axis: rgba(255, 255, 255, 0.5);
-$point: #60a5fa; // male（既存）
-$point-stroke: rgba(255, 255, 255, 0.9);
-$tooltip-bg: #0b1020;
-$tooltip-border: rgba(255, 255, 255, 0.15);
-$shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+@charset "utf-8";
+@use "theme" as *;
 
-$green: #34d399;
-$blue: #60a5fa;
-$yellow: #fbbf24;
-$orange: #fb923c;
-$red: #f87171; // female
-
-* {
-    box-sizing: border-box;
-}
-
-html,
-body {
-    height: 100%;
-}
-
-body {
-    margin: 0;
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-        Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    background: radial-gradient(1200px 600px at 50% -200px, #16213a 0%, $bg 60%);
-    color: $ink;
-}
-
+// ページヘッダ＆ナビも統一
 h1 {
+    @include h1-grad;
     text-align: center;
-    font-weight: 800;
-    letter-spacing: .02em;
-    margin: 20px 0 8px;
+    margin: 20px 0 12px;
 }
 
+a {
+    text-decoration: none;
+}
+
+.move {
+    @include btn-main;
+}
+
+.link-group {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+// ===== チャート =====
 #chart {
     max-width: 1000px;
     margin: 0 auto;
@@ -50,28 +31,26 @@ h1 {
 .chart-svg {
     width: 100%;
     height: auto;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
-    box-shadow: $shadow;
+    @include card;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, 0));
 }
 
-// グリッド・軸
+// グリッド・軸をピンク寄りで
 .grid-line {
-    stroke: $grid;
+    stroke: rgba(255, 255, 255, .12);
     stroke-width: 1;
     shape-rendering: crispEdges;
 }
 
 .axes {
     .axis {
-        stroke: $axis;
+        stroke: rgba(255, 255, 255, .55);
         stroke-width: 1.2;
         shape-rendering: crispEdges;
     }
 
     .tick {
-        stroke: $axis;
+        stroke: rgba(255, 255, 255, .55);
         stroke-width: 1.2;
     }
 
@@ -83,75 +62,40 @@ h1 {
     }
 
     .axis-title {
-        fill: $ink;
-        font-weight: 700;
+        fill: $main-200;
+        font-weight: 900;
         letter-spacing: .02em;
         user-select: none;
     }
 }
 
-// 点
+// 点（gender 色は従来維持／選択やホバー強調はピンク）
 .point {
-    fill: $point; // male のデフォルト色（青）
-    stroke: $point-stroke;
-    stroke-width: 1.5;
+    fill: $male;
+    stroke: rgba(255, 255, 255, .95);
+    stroke-width: 1.6;
     transition: transform .06s ease, r .06s ease, filter .2s ease, fill .2s ease;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .4));
 
     &.female {
-        fill: $red;
+        fill: $female;
     }
 
-    // female は赤
     &.male {
-        fill: $point;
+        fill: $male;
     }
-
-    // male は既存の青（明示）
 
     &.is-hover {
-        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, .55));
     }
 
-    // 選択時：色は維持し、輪郭とサイズで強調
     &.is-selected {
         stroke-width: 2.2;
-        r: 9; // 一部ブラウザでは効かないことがあるのでJS側でもr=9にしています
-        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.55));
+        filter: drop-shadow(0 8px 22px rgba($main, .45));
     }
 }
 
-// ツールチップ
-.tooltip {
-    position: fixed;
-    z-index: 50;
-    background: $tooltip-bg;
-    border: 1px solid $tooltip-border;
-    color: $ink;
-    padding: 10px 12px;
-    border-radius: 10px;
-    box-shadow: $shadow;
-    max-width: min(62ch, 72vw);
-    pointer-events: none;
-
-    .tt-name {
-        font-weight: 800;
-        margin-bottom: 2px;
-    }
-
-    .tt-value {
-        font-size: 13px;
-        color: $muted;
-        margin-bottom: 4px;
-    }
-
-    .tt-scores {
-        font-size: 12px;
-        opacity: .9;
-    }
-}
-
-// ===== 選択パネル =====
+// ピックパネル（選択UI）
 .pick-panel {
     display: grid;
     grid-template-columns: 1fr 1fr max-content;
@@ -160,35 +104,30 @@ h1 {
     align-items: stretch;
 
     .slot {
-        background: $panel;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
+        @include card;
         padding: 12px;
         display: grid;
         grid-template-rows: max-content 1fr;
         row-gap: 6px;
 
         &.filled {
-            border-color: rgba(255, 255, 255, 0.25);
+            border-color: rgba($main, .45);
         }
 
         .slot-label {
             font-size: 12px;
             color: $muted;
-            letter-spacing: .02em;
         }
 
-        .slot-main {
-            .slot-name {
-                font-weight: 800;
-                margin-bottom: 4px;
-            }
+        .slot-name {
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
 
-            .slot-value {
-                font-size: 13px;
-                color: $muted;
-                line-height: 1.5;
-            }
+        .slot-value {
+            font-size: 13px;
+            color: $muted;
+            line-height: 1.5;
         }
     }
 
@@ -196,29 +135,14 @@ h1 {
         display: grid;
         align-content: start;
         gap: 8px;
+    }
 
-        .btn {
-            padding: 10px 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: transparent;
-            color: $ink;
-            cursor: pointer;
-            transition: background .2s ease, border-color .2s ease, opacity .2s ease;
+    .actions .btn {
+        @include btn-main;
+        padding: 10px 12px;
 
-            &:hover {
-                background: rgba(255, 255, 255, 0.06);
-                border-color: rgba(255, 255, 255, 0.25);
-            }
-
-            &:disabled {
-                opacity: .5;
-                cursor: not-allowed;
-            }
-
-            &.loading {
-                cursor: progress;
-            }
+        &.loading {
+            cursor: progress;
         }
     }
 
@@ -232,140 +156,129 @@ h1 {
     }
 }
 
-// ===== モーダル =====
-.modal {
-    position: fixed;
-    inset: 0;
-    z-index: 80;
-    display: none;
+// モーダルのランクバッジ色（ピンク基調）
+.modal__body .rank-badge {
+    background: rgba($main, .18);
+    color: $main;
+}
 
-    &.is-open {
-        display: block;
+.modal__body .dims .dim {
+    @include card;
+    border-radius: 12px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, .04);
+
+    .dim-label {
+        color: $muted;
+        margin-right: 4px;
     }
 
-    &__backdrop {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(2px);
+    .dim-text {
+        font-weight: 700;
     }
+}
 
-    &__dialog {
+/* ====== Camera UI in Slot ====== */
+.slot.filled .slot-media {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) 1fr;
+    gap: 10px;
+    align-items: start;
+
+    .cam {
         position: relative;
-        background: $panel;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 16px;
-        width: min(680px, 92vw);
-        margin: 8vh auto 0;
-        padding: 16px 16px 18px;
-        box-shadow: $shadow;
-    }
+        @include card;
+        padding: 6px;
+        background: rgba(255, 255, 255, .03);
+        border-color: rgba($main, .28);
 
-    &__title {
-        margin: 0 0 8px;
-        font-size: 20px;
-        font-weight: 800;
-        letter-spacing: .01em;
-    }
-
-    &__close {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        background: transparent;
-        color: $ink;
-        cursor: pointer;
-
-        &:hover {
-            background: rgba(255, 255, 255, 0.06);
+        video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            background: #000;
+            display: block;
         }
     }
 
-    &__pair {
+    .cam-actions {
         display: grid;
-        grid-template-columns: 1fr max-content 1fr;
+        grid-auto-flow: row;
         gap: 8px;
-        align-items: center;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        padding: 10px 12px;
-        margin-bottom: 10px;
 
-        .sep {
-            color: $muted;
-            font-weight: 800;
+        .btn {
+            @include btn-main;
+            padding: 8px 10px;
+            font-size: 14px;
+
+            &.cam-capture,
+            &.cam-stop {
+                opacity: .9;
+            }
+
+            &:disabled {
+                opacity: .5;
+                cursor: not-allowed;
+            }
         }
 
-        .p1,
-        .p2 {
-            font-weight: 700;
+        .file-label {
+            input {
+                display: none;
+            }
         }
     }
 
-    &__body {
-        .rank-line {
-            margin-bottom: 8px;
+    .thumb {
+        grid-column: 1 / -1;
+        display: grid;
+        justify-content: start;
 
-            .rank-badge {
-                display: inline-block;
-                min-width: 2.2em;
-                text-align: center;
-                padding: 2px 10px;
-                border-radius: 999px;
-                font-weight: 900;
-                border: 1px solid rgba(255, 255, 255, 0.15);
-
-                &.rS {
-                    background: rgba($green, .15);
-                    color: $green;
-                }
-
-                &.rA {
-                    background: rgba($blue, .15);
-                    color: $blue;
-                }
-
-                &.rB {
-                    background: rgba($yellow, .18);
-                    color: $yellow;
-                }
-
-                &.rC {
-                    background: rgba($orange, .18);
-                    color: $orange;
-                }
-
-                &.rD {
-                    background: rgba($red, .15);
-                    color: $red;
-                }
-            }
+        img {
+            width: 96px;
+            height: 96px;
+            border-radius: 999px;
+            object-fit: cover;
+            display: block;
+            border: 2px solid rgba($main, .6);
+            box-shadow: 0 6px 18px rgba($main, .25);
+            background: rgba(255, 255, 255, .06);
         }
+    }
+}
 
-        .dims {
-            display: grid;
-            gap: 6px;
+@media (max-width: 720px) {
+    .slot.filled .slot-media {
+        grid-template-columns: 1fr;
+    }
+}
 
-            .dim {
-                background: rgba(255, 255, 255, 0.02);
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                border-radius: 10px;
-                padding: 8px 10px;
+/* ====== Modal Pair Avatars ====== */
+.modal__pair {
+    .person {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 10px;
+        align-items: center;
+    }
 
-                .dim-label {
-                    color: $muted;
-                    margin-right: 4px;
-                }
+    .avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba($main, .25), rgba($main, .10));
+        background-size: cover;
+        background-position: center;
+        border: 2px solid rgba($main, .55);
+        box-shadow: 0 6px 18px rgba($main, .25);
 
-                .dim-text {
-                    font-weight: 600;
-                }
-            }
+        &.has-photo {
+            /* 画像ありのときの見栄え補正だけ */
         }
+    }
+
+    .person-text {
+        font-weight: 800;
     }
 }

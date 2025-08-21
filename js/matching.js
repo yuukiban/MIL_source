@@ -1,4 +1,4 @@
-/* 相性チェック 散布図 + 2点選択 + Gemini判定（ポップアップ表示）
+/* 相性チェック 散布図 + 2点選択 + Gemini判定 + カメラ/画像アップロード（ポップアップ表示）
    X: logicalEmotional (100=論理的 / 0=感情的)
    Y: workPrivate      (100=仕事   / 0=プライベート)
 */
@@ -19,7 +19,7 @@ $(function () {
         "落合優椰": { value: "運動、自然、一人の時間", logicalEmotional: 25, workPrivate: 20, gender: "male" },
         "高橋誠": { value: "自然の中で行うスポーツ", logicalEmotional: 35, workPrivate: 30, gender: "male" },
         "松本雄大": { value: "夢", logicalEmotional: 20, workPrivate: 45, gender: "male" },
-        "尼田優河": { value: "花粉症の薬", logicalEmotional: 85, workPrivate: 60, gender: "male" }
+        "尼田優河": { value: "花粉症の薬", logicalEmotional: 85, workPrivate: 60, gender: "female" }
     };
 
     const data = $.map(dictWithScores, (rec, name) => ({
@@ -33,7 +33,7 @@ $(function () {
     // ====== SVG 基本設定 ======
     const width = 860;
     const height = 560;
-    const margin = { top: 50, right: 60, bottom: 110, left: 90 }; // 下に選択UIを置く分少し広め
+    const margin = { top: 50, right: 60, bottom: 110, left: 90 }; // 下に選択UIを置く分広め
     const innerW = width - margin.left - margin.right;
     const innerH = height - margin.top - margin.bottom;
 
@@ -47,7 +47,7 @@ $(function () {
     // ====== コンテナ & 補助UI（選択パネル/判定ボタン/モーダル） ======
     const $chart = $('<div id="chart"></div>').appendTo('body');
 
-    // 選択パネル
+    // 選択パネル（カメラUIは filled 時に差し込み）
     const $panel = $(`
     <div class="pick-panel">
       <div class="slot" data-slot="0">
@@ -95,13 +95,12 @@ $(function () {
     </div>
   `).appendTo('body');
 
-    function openModal() {
-        $modal.attr('aria-hidden', 'false').addClass('is-open');
-    }
-    function closeModal() {
-        $modal.attr('aria-hidden', 'true').removeClass('is-open');
-    }
-    $modal.on('click', '.modal__backdrop, .modal__close', closeModal);
+    function openModal() { $modal.attr('aria-hidden', 'false').addClass('is-open'); }
+    function closeModal() { $modal.attr('aria-hidden', 'true').removeClass('is-open'); }
+    $modal.on('click', '.modal__backdrop, .modal__close', function () {
+        // モーダルを閉じても映像プレビューはスロット内なのでそのまま
+        closeModal();
+    });
 
     // ====== SVG 本体 ======
     const $svg = S('svg', {
@@ -110,7 +109,7 @@ $(function () {
         viewBox: `0 0 ${width} ${height}`,
         width: width, height: height,
         role: 'img', 'aria-label': '価値観散布図'
-    }).prependTo($chart); // パネルより上に表示
+    }).prependTo($chart);
 
     const $gGrid = S('g', { class: 'grid' }).appendTo($svg);
     const $gAxes = S('g', { class: 'axes' }).appendTo($svg);
@@ -122,14 +121,12 @@ $(function () {
 
     // グリッド & 目盛
     const ticks = [0, 25, 50, 75, 100];
-
     $.each(ticks, (_, t) => {
         const x = xPos(t);
         $gGrid.append(S('line', { class: 'grid-line v', x1: x, y1: margin.top, x2: x, y2: height - margin.bottom }));
         $gAxes.append(S('line', { class: 'tick v', x1: x, y1: height - margin.bottom, x2: x, y2: height - margin.bottom + 6 }));
         $gAxes.append(S('text', { class: 'tick-label v', x: x, y: height - margin.bottom + 20, 'text-anchor': 'middle' }).text(String(t)));
     });
-
     $.each(ticks, (_, t) => {
         const y = yPos(t);
         $gGrid.append(S('line', { class: 'grid-line h', x1: margin.left, y1: y, x2: width - margin.right, y2: y }));
@@ -154,10 +151,113 @@ $(function () {
     }).text('仕事 ↑↓ プライベート'));
 
     // ====== 選択ロジック ======
-    const selected = []; // [{name,value,x,y,$el}, ...]
+    const selected = [];           // [{name,value,x,y,gender,photo?,$el?}, ...]
+    const cameraStreams = {};      // { 0: MediaStream|null, 1: MediaStream|null }
+
+    function stopCamera(slotIndex) {
+        const stream = cameraStreams[slotIndex];
+        if (stream) {
+            stream.getTracks().forEach(t => t.stop());
+            cameraStreams[slotIndex] = null;
+        }
+        const $slot = $panel.find(`.slot[data-slot="${slotIndex}"]`);
+        $slot.find('video').each(function () {
+            this.srcObject = null;
+        });
+        $slot.find('.cam-capture, .cam-stop').prop('disabled', true);
+        $slot.find('.cam-start').prop('disabled', false);
+    }
+
+    function startCamera(slotIndex) {
+        const $slot = $panel.find(`.slot[data-slot="${slotIndex}"]`);
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            // カメラ非対応 → ファイル選択に誘導
+            $slot.find('.file-input').trigger('click');
+            return;
+        }
+        navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user" }, audio: false
+        }).then(stream => {
+            cameraStreams[slotIndex] = stream;
+            const video = $slot.find('video').get(0);
+            video.srcObject = stream;
+            video.play().catch(() => { });
+            $slot.find('.cam-capture, .cam-stop').prop('disabled', false);
+            $slot.find('.cam-start').prop('disabled', true);
+        }).catch(err => {
+            console.warn('getUserMedia error:', err);
+            // 失敗したらファイル選択へ
+            $slot.find('.file-input').trigger('click');
+        });
+    }
+
+    function capturePhoto(slotIndex) {
+        const $slot = $panel.find(`.slot[data-slot="${slotIndex}"]`);
+        const video = $slot.find('video').get(0);
+        if (!video || !video.videoWidth) { return; }
+
+        const canvas = $slot.find('canvas').get(0);
+        const w = video.videoWidth;
+        const h = video.videoHeight;
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+        setThumb(slotIndex, dataUrl);
+    }
+
+    function setThumb(slotIndex, dataUrl) {
+        const $slot = $panel.find(`.slot[data-slot="${slotIndex}"]`);
+        $slot.find('.thumb img').attr('src', dataUrl).attr('aria-hidden', 'false').show();
+
+        // 選択配列の該当要素に保存（スロットと同じ添字）
+        if (selected[slotIndex]) {
+            selected[slotIndex].photo = dataUrl;
+        }
+    }
+
+    function ensureMediaUI(slotIndex, item) {
+        const $slot = $panel.find(`.slot[data-slot="${slotIndex}"]`);
+        const hasUI = $slot.find('.slot-media').length > 0;
+
+        if (!item) {
+            // 未選択ならUIを消してカメラ停止
+            stopCamera(slotIndex);
+            if (hasUI) $slot.find('.slot-media').remove();
+            return;
+        }
+        if (!hasUI) {
+            // カメラUIを生成
+            $slot.find('.slot-main').append(`
+        <div class="slot-media" data-slot-media="${slotIndex}">
+          <div class="cam">
+            <video autoplay playsinline muted></video>
+            <canvas style="display:none"></canvas>
+          </div>
+          <div class="cam-actions">
+            <button type="button" class="btn cam-start">カメラ起動</button>
+            <button type="button" class="btn cam-capture" disabled>撮影</button>
+            <label class="btn file-label">
+              画像を選択
+              <input type="file" accept="image/*" class="file-input" hidden>
+            </label>
+            <button type="button" class="btn cam-stop" disabled>停止</button>
+          </div>
+          <div class="thumb"><img alt="プレビュー" style="display:none"/></div>
+        </div>
+      `);
+        }
+        // 以前に撮った写真があれば反映
+        if (item.photo) {
+            setThumb(slotIndex, item.photo);
+        }
+    }
 
     function updatePanel() {
-        const fillSlot = (i, item) => {
+        // スロットに selected[0], selected[1] を差し込み
+        for (let i = 0; i < 2; i++) {
+            const item = selected[i];
             const $slot = $panel.find(`.slot[data-slot="${i}"]`);
             if (item) {
                 $slot.addClass('filled');
@@ -168,16 +268,13 @@ $(function () {
                 $slot.find('.slot-name').text('未選択');
                 $slot.find('.slot-value').text('—');
             }
-        };
-        fillSlot(0, selected[0]);
-        fillSlot(1, selected[1]);
-
+            ensureMediaUI(i, item);
+        }
         // ボタン制御
         $panel.find('.btn.judge').prop('disabled', selected.length !== 2);
     }
 
     function toggleSelect(d, $circle) {
-        // すでに選択済みなら解除
         const idx = selected.findIndex(s => s.name === d.name);
         if (idx >= 0) {
             selected[idx].$el.removeClass('is-selected').attr('r', 7);
@@ -185,26 +282,26 @@ $(function () {
             updatePanel();
             return;
         }
-        // 2つまで。超えたら先頭を外す
         if (selected.length === 2) {
             const removed = selected.shift();
-            removed.$el.removeClass('is-selected').attr('r', 7);
+            if (removed && removed.$el) removed.$el.removeClass('is-selected').attr('r', 7);
         }
-        // 追加
         $circle.addClass('is-selected').attr('r', 9);
-        selected.push({ ...d, $el: $circle });
+        selected.push({ ...d, $el: $circle, photo: null });
         updatePanel();
     }
 
     $panel.on('click', '.btn.clear', function () {
         while (selected.length) {
             const s = selected.pop();
-            s.$el.removeClass('is-selected').attr('r', 7);
+            s.$el && s.$el.removeClass('is-selected').attr('r', 7);
         }
+        // 両スロットのカメラ停止
+        stopCamera(0); stopCamera(1);
         updatePanel();
     });
 
-    // ====== ツールチップ（ホバー用） ======
+    // ====== ツールチップ ======
     const $tooltip = $('<div class="tooltip" role="dialog" aria-live="polite"></div>').appendTo('body').hide();
     const showTooltip = (html, pageX, pageY) => {
         $tooltip.html(html).show();
@@ -221,14 +318,14 @@ $(function () {
     };
     const hideTooltip = () => $tooltip.hide();
 
-    // ====== 点を描画 ======
+    // ====== 点を描画（genderで色分け） ======
     $.each(data, function (_, d) {
         const cx = xPos(d.x);
         const cy = yPos(d.y);
-
         const genderClass = (d.gender === 'female') ? 'female' : 'male';
+
         const $pt = S('circle', {
-            class: `point ${genderClass}`,  // ★ gender クラスを追加
+            class: `point ${genderClass}`,
             cx: cx, cy: cy, r: 7,
             'data-name': d.name,
             'data-value': d.value,
@@ -237,17 +334,15 @@ $(function () {
             'data-gender': d.gender
         }).appendTo($gPts);
 
-        // クリックで選択トグル
         $pt.on('click', function (e) {
             e.stopPropagation();
             toggleSelect(d, $(this));
         });
 
-        // ホバーで情報
         $pt.on('mouseenter', function (e) {
             $(this).addClass('is-hover');
             const html = `
-        <div class="tt-name">${d.name}</div>
+        <div class="tt-name">${d.name} (${d.gender === 'female' ? '女性' : '男性'})</div>
         <div class="tt-value">「${d.value}」</div>
         <div class="tt-scores">論理的-感情的: <b>${d.x}</b> ／ 仕事-プライベート: <b>${d.y}</b></div>`;
             showTooltip(html, e.pageX, e.pageY);
@@ -259,13 +354,38 @@ $(function () {
         });
     });
 
+    // ====== カメラUIのイベント（委譲） ======
+    $panel.on('click', '.cam-start', function () {
+        const slotIndex = Number($(this).closest('.slot').data('slot'));
+        startCamera(slotIndex);
+    });
+    $panel.on('click', '.cam-capture', function () {
+        const slotIndex = Number($(this).closest('.slot').data('slot'));
+        capturePhoto(slotIndex);
+    });
+    $panel.on('click', '.cam-stop', function () {
+        const slotIndex = Number($(this).closest('.slot').data('slot'));
+        stopCamera(slotIndex);
+    });
+    $panel.on('change', '.file-input', function (e) {
+        const slotIndex = Number($(this).closest('.slot').data('slot'));
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+            const dataUrl = ev.target.result;
+            setThumb(slotIndex, dataUrl);
+        };
+        reader.readAsDataURL(file);
+    });
+
     // ====== Gemini への問い合わせ ======
     function buildPrompt(p1, p2) {
         return [
             `あなたは価値観の相性診断の専門家です。`,
-            `次の2人の「No ○○ No Life」の ○○ と、数値スコア（論理的-感情的, 仕事-プライベート）を踏まえ、相性を日本語(関西弁)で判定してください。`,
-            `出力は**必ず**次のJSONのみで返してください（余計な文字を含めない）：`,
-            `{"rank":"S|A|B|C|D","work":"100字以上","friendship":"100字以上","love":"100字以上"}`,
+            `次の2人の「No ○○ No Life」の ○○ と、数値スコア（論理的-感情的, 仕事-プライベート）を踏まえ、相性を日本語で判定してください。`,
+            `出力は必ず次のJSONのみで返してください：`,
+            `{"rank":"S|A|B|C|D","work":"100字","friendship":"100字","love":"100字"}`,
             `制約：句読点以外の記号は使わない。`,
             ``,
             `人物1: ${p1.name} / 「${p1.value}」 / 論理:${p1.x} / 仕事:${p1.y}`,
@@ -275,20 +395,25 @@ $(function () {
 
     function safeParseGeminiText(txt) {
         if (!txt) return null;
-        // コードブロックがある場合に備えて中のJSONだけ抜き出し
         const m = txt.match(/\{[\s\S]*\}/);
         const core = m ? m[0] : txt;
-        try {
-            return JSON.parse(core);
-        } catch (e) {
-            return null;
-        }
+        try { return JSON.parse(core); } catch (e) { return null; }
+    }
+
+    function personHTML(p) {
+        const bgStyle = p.photo ? `style="background-image:url('${p.photo}');"` : '';
+        const alt = `${p.name}の写真`;
+        return `
+      <div class="person">
+        <div class="avatar ${p.photo ? 'has-photo' : ''}" ${bgStyle} role="img" aria-label="${alt}"></div>
+        <div class="person-text">${p.name}：「${p.value}」</div>
+      </div>`;
     }
 
     function showResultModal(p1, p2, result) {
-        // ペア表示
-        $modal.find('.p1').text(`${p1.name}：「${p1.value}」`);
-        $modal.find('.p2').text(`${p2.name}：「${p2.value}」`);
+        // ペア（アバター込み）
+        $modal.find('.p1').html(personHTML(p1));
+        $modal.find('.p2').html(personHTML(p2));
 
         // ランクと文
         const rank = (result && result.rank || '—').toUpperCase();
@@ -296,8 +421,7 @@ $(function () {
         const friendship = result && result.friendship || '—';
         const love = result && result.love || '—';
 
-        const $badge = $modal.find('.rank-badge').text(rank)
-            .removeClass('rS rA rB rC rD');
+        const $badge = $modal.find('.rank-badge').text(rank).removeClass('rS rA rB rC rD');
         if (/^[SABCD]$/.test(rank)) $badge.addClass(`r${rank}`);
 
         const $dims = $modal.find('.dims');
@@ -310,20 +434,16 @@ $(function () {
 
     function judgeCompatibility() {
         if (selected.length !== 2) return;
-
         const [p1, p2] = selected;
-        // 読み込み中UI
         const $btn = $panel.find('.btn.judge').prop('disabled', true).addClass('loading').text('判定中…');
-
         const prompt = buildPrompt(p1, p2);
 
         $.ajax({
             url: `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=` + encodeURIComponent(GEMINI_API_KEY),
             method: "POST",
+            timeout: 15000,
             contentType: "application/json",
-            data: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
-            })
+            data: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         }).done(function (data) {
             const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
             const parsed = safeParseGeminiText(text);
@@ -340,4 +460,9 @@ $(function () {
 
     // 初期描画
     updatePanel();
+
+    // ページ離脱時にカメラを止める
+    $(window).on('beforeunload', function () {
+        stopCamera(0); stopCamera(1);
+    });
 });
