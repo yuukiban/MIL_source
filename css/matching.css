@@ -1,0 +1,301 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  background: radial-gradient(1200px 600px at 50% -200px, #16213a 0%, #0f172a 60%);
+  color: #e5e7eb;
+}
+
+h1 {
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin: 20px 0 8px;
+}
+
+#chart {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px 16px 28px;
+}
+
+.chart-svg {
+  width: 100%;
+  height: auto;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.grid-line {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.axes .axis {
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1.2;
+  shape-rendering: crispEdges;
+}
+.axes .tick {
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1.2;
+}
+.axes .tick-label,
+.axes .axis-end {
+  fill: #9ca3af;
+  font-size: 12px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.axes .axis-title {
+  fill: #e5e7eb;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.point {
+  fill: #60a5fa;
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 1.5;
+  transition: transform 0.06s ease, r 0.06s ease, filter 0.2s ease, fill 0.2s ease;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+.point.female {
+  fill: #f87171;
+}
+.point.male {
+  fill: #60a5fa;
+}
+.point.is-hover {
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+}
+.point.is-selected {
+  stroke-width: 2.2;
+  r: 9;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.55));
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  background: #0b1020;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e5e7eb;
+  padding: 10px 12px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  max-width: min(62ch, 72vw);
+  pointer-events: none;
+}
+.tooltip .tt-name {
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+.tooltip .tt-value {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+.tooltip .tt-scores {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.pick-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr max-content;
+  gap: 12px;
+  margin-top: 10px;
+  align-items: stretch;
+}
+.pick-panel .slot {
+  background: #0b1223;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  grid-template-rows: max-content 1fr;
+  row-gap: 6px;
+}
+.pick-panel .slot.filled {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.pick-panel .slot .slot-label {
+  font-size: 12px;
+  color: #9ca3af;
+  letter-spacing: 0.02em;
+}
+.pick-panel .slot .slot-main .slot-name {
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.pick-panel .slot .slot-main .slot-value {
+  font-size: 13px;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+.pick-panel .actions {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+.pick-panel .actions .btn {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+.pick-panel .actions .btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.pick-panel .actions .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pick-panel .actions .btn.loading {
+  cursor: progress;
+}
+@media (max-width: 720px) {
+  .pick-panel {
+    grid-template-columns: 1fr;
+  }
+  .pick-panel .actions {
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+  }
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+}
+.modal.is-open {
+  display: block;
+}
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
+}
+.modal__dialog {
+  position: relative;
+  background: #0b1223;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  width: min(680px, 92vw);
+  margin: 8vh auto 0;
+  padding: 16px 16px 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.modal__title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.modal__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: #e5e7eb;
+  cursor: pointer;
+}
+.modal__close:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.modal__pair {
+  display: grid;
+  grid-template-columns: 1fr max-content 1fr;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.modal__pair .sep {
+  color: #9ca3af;
+  font-weight: 800;
+}
+.modal__pair .p1,
+.modal__pair .p2 {
+  font-weight: 700;
+}
+.modal__body .rank-line {
+  margin-bottom: 8px;
+}
+.modal__body .rank-line .rank-badge {
+  display: inline-block;
+  min-width: 2.2em;
+  text-align: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.modal__body .rank-line .rank-badge.rS {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+.modal__body .rank-line .rank-badge.rA {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+}
+.modal__body .rank-line .rank-badge.rB {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fbbf24;
+}
+.modal__body .rank-line .rank-badge.rC {
+  background: rgba(251, 146, 60, 0.18);
+  color: #fb923c;
+}
+.modal__body .rank-line .rank-badge.rD {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+.modal__body .dims {
+  display: grid;
+  gap: 6px;
+}
+.modal__body .dims .dim {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.modal__body .dims .dim .dim-label {
+  color: #9ca3af;
+  margin-right: 4px;
+}
+.modal__body .dims .dim .dim-text {
+  font-weight: 600;
+}/*# sourceMappingURL=matching.css.map */

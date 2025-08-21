@@ -1,0 +1,371 @@
+// ===== カラートークン =====
+$bg: #0f172a;
+$panel: #0b1223;
+$ink: #e5e7eb;
+$muted: #9ca3af;
+$grid: rgba(255, 255, 255, 0.1);
+$axis: rgba(255, 255, 255, 0.5);
+$point: #60a5fa; // male（既存）
+$point-stroke: rgba(255, 255, 255, 0.9);
+$tooltip-bg: #0b1020;
+$tooltip-border: rgba(255, 255, 255, 0.15);
+$shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+$green: #34d399;
+$blue: #60a5fa;
+$yellow: #fbbf24;
+$orange: #fb923c;
+$red: #f87171; // female
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    background: radial-gradient(1200px 600px at 50% -200px, #16213a 0%, $bg 60%);
+    color: $ink;
+}
+
+h1 {
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: .02em;
+    margin: 20px 0 8px;
+}
+
+#chart {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 10px 16px 28px;
+}
+
+.chart-svg {
+    width: 100%;
+    height: auto;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    box-shadow: $shadow;
+}
+
+// グリッド・軸
+.grid-line {
+    stroke: $grid;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+.axes {
+    .axis {
+        stroke: $axis;
+        stroke-width: 1.2;
+        shape-rendering: crispEdges;
+    }
+
+    .tick {
+        stroke: $axis;
+        stroke-width: 1.2;
+    }
+
+    .tick-label,
+    .axis-end {
+        fill: $muted;
+        font-size: 12px;
+        user-select: none;
+    }
+
+    .axis-title {
+        fill: $ink;
+        font-weight: 700;
+        letter-spacing: .02em;
+        user-select: none;
+    }
+}
+
+// 点
+.point {
+    fill: $point; // male のデフォルト色（青）
+    stroke: $point-stroke;
+    stroke-width: 1.5;
+    transition: transform .06s ease, r .06s ease, filter .2s ease, fill .2s ease;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+
+    &.female {
+        fill: $red;
+    }
+
+    // female は赤
+    &.male {
+        fill: $point;
+    }
+
+    // male は既存の青（明示）
+
+    &.is-hover {
+        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+    }
+
+    // 選択時：色は維持し、輪郭とサイズで強調
+    &.is-selected {
+        stroke-width: 2.2;
+        r: 9; // 一部ブラウザでは効かないことがあるのでJS側でもr=9にしています
+        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.55));
+    }
+}
+
+// ツールチップ
+.tooltip {
+    position: fixed;
+    z-index: 50;
+    background: $tooltip-bg;
+    border: 1px solid $tooltip-border;
+    color: $ink;
+    padding: 10px 12px;
+    border-radius: 10px;
+    box-shadow: $shadow;
+    max-width: min(62ch, 72vw);
+    pointer-events: none;
+
+    .tt-name {
+        font-weight: 800;
+        margin-bottom: 2px;
+    }
+
+    .tt-value {
+        font-size: 13px;
+        color: $muted;
+        margin-bottom: 4px;
+    }
+
+    .tt-scores {
+        font-size: 12px;
+        opacity: .9;
+    }
+}
+
+// ===== 選択パネル =====
+.pick-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr max-content;
+    gap: 12px;
+    margin-top: 10px;
+    align-items: stretch;
+
+    .slot {
+        background: $panel;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 12px;
+        display: grid;
+        grid-template-rows: max-content 1fr;
+        row-gap: 6px;
+
+        &.filled {
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .slot-label {
+            font-size: 12px;
+            color: $muted;
+            letter-spacing: .02em;
+        }
+
+        .slot-main {
+            .slot-name {
+                font-weight: 800;
+                margin-bottom: 4px;
+            }
+
+            .slot-value {
+                font-size: 13px;
+                color: $muted;
+                line-height: 1.5;
+            }
+        }
+    }
+
+    .actions {
+        display: grid;
+        align-content: start;
+        gap: 8px;
+
+        .btn {
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: transparent;
+            color: $ink;
+            cursor: pointer;
+            transition: background .2s ease, border-color .2s ease, opacity .2s ease;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.06);
+                border-color: rgba(255, 255, 255, 0.25);
+            }
+
+            &:disabled {
+                opacity: .5;
+                cursor: not-allowed;
+            }
+
+            &.loading {
+                cursor: progress;
+            }
+        }
+    }
+
+    @media (max-width: 720px) {
+        grid-template-columns: 1fr;
+
+        .actions {
+            grid-auto-flow: column;
+            grid-auto-columns: 1fr;
+        }
+    }
+}
+
+// ===== モーダル =====
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: none;
+
+    &.is-open {
+        display: block;
+    }
+
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+    }
+
+    &__dialog {
+        position: relative;
+        background: $panel;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        width: min(680px, 92vw);
+        margin: 8vh auto 0;
+        padding: 16px 16px 18px;
+        box-shadow: $shadow;
+    }
+
+    &__title {
+        margin: 0 0 8px;
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: .01em;
+    }
+
+    &__close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: transparent;
+        color: $ink;
+        cursor: pointer;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+    }
+
+    &__pair {
+        display: grid;
+        grid-template-columns: 1fr max-content 1fr;
+        gap: 8px;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+
+        .sep {
+            color: $muted;
+            font-weight: 800;
+        }
+
+        .p1,
+        .p2 {
+            font-weight: 700;
+        }
+    }
+
+    &__body {
+        .rank-line {
+            margin-bottom: 8px;
+
+            .rank-badge {
+                display: inline-block;
+                min-width: 2.2em;
+                text-align: center;
+                padding: 2px 10px;
+                border-radius: 999px;
+                font-weight: 900;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+
+                &.rS {
+                    background: rgba($green, .15);
+                    color: $green;
+                }
+
+                &.rA {
+                    background: rgba($blue, .15);
+                    color: $blue;
+                }
+
+                &.rB {
+                    background: rgba($yellow, .18);
+                    color: $yellow;
+                }
+
+                &.rC {
+                    background: rgba($orange, .18);
+                    color: $orange;
+                }
+
+                &.rD {
+                    background: rgba($red, .15);
+                    color: $red;
+                }
+            }
+        }
+
+        .dims {
+            display: grid;
+            gap: 6px;
+
+            .dim {
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 10px;
+                padding: 8px 10px;
+
+                .dim-label {
+                    color: $muted;
+                    margin-right: 4px;
+                }
+
+                .dim-text {
+                    font-weight: 600;
+                }
+            }
+        }
+    }
+}

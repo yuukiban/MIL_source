@@ -1,5 +1,4 @@
-console.log('はじめてのジャバスクリプト');
-// 追加機能: 近い人生観と理由
+const GEMINI_API_KEY = "AIzaSyDicoKd6dv4ZQQqCXsvUkDyd0oiT4_t954";
 
 var dict = {
     "竹内優貴": "ありったけの夢と類まれな努力",
@@ -22,7 +21,7 @@ var dict = {
     "尼田優河": "花粉症の薬",
 };
 
-function showRandom() {
+function selectRandomPerson() {
     var keys = Object.keys(dict);
     var randomIndex = Math.floor(Math.random() * keys.length);
     var randomKey = keys[randomIndex];
@@ -30,21 +29,18 @@ function showRandom() {
     $(".key").text(randomKey);
     $(".value").text("No " + randomValue + " No Life");
     $(".key").css("color", "#e8f0ff");
-    $("#gpt-opinion").text(""); // 前の見解をクリア
+    $("#gpt-opinion").text("---------------------");
 }
 
-showRandom();
+selectRandomPerson();
 
 $("button.next").on("click", function () {
-    showRandom();
+    selectRandomPerson();
 });
 
 $("button.answer").on("click", function () {
     $(".key").css("color", "black");
 });
-
-// ✅ Gemini API呼び出し（フロント直書き）
-const GEMINI_API_KEY = "AIzaSyDicoKd6dv4ZQQqCXsvUkDyd0oiT4_t954";
 
 $("button.opinion").on("click", function () {
     const motto = $(".value").text();
@@ -58,7 +54,7 @@ $("button.opinion").on("click", function () {
             contents: [
                 {
                     parts: [
-                        { text: `前提として彼 or 彼女は壮絶な人生を送ってきた。次の人生観に関する見解(アドバイス)を示してください（90〜120文字程度）：「${motto}」` }
+                        { text: `前提として彼 or 彼女は壮絶な人生を送ってきた。彼・彼女の人生観に関してその人生観に至った背景の推測をその人になりきって答えてください（90〜120文字程度）：「No ${motto} No Life」` }
                     ]
                 }
             ]
