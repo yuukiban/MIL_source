@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS test</title>
     <link rel="stylesheet" href="../css/chat.css">
+    <link rel="shortcut icon" href="../imgs/hert.png">
+    <title>同期を覚えよう！</title>
 </head>
 
 <body>
@@ -13,9 +14,13 @@
         <span class="shutter-text">I want to communicate with you</span>
     </div>
 
+    <audio id="opening-audio" preload="auto" playsinline>
+        <source src="../audio/matching.mp3" type="audio/mpeg">
+    </audio>
+
     <section class="container">
         <div class="chat">
-            <div class="chat__title">💬 掲示板(o^―^o)ﾆｺ</div>
+            <div class="chat__title">💬あそ部チャット</div>
 
             <div class="chat__room">
                 <div class="messages" id="messages" aria-live="polite"></div>
@@ -29,16 +34,17 @@
                 </form>
             </div>
         </div>
-
-        <a href="./quiz.html">
-            <button class="move">クイズページへ</button>
-        </a>
-        <a href="./matching.html">
-            <button class="move">相性ページへ</button>
-        </a>
-        <a href="../index.html">
-            <button class="move">トップページへ</button>
-        </a>
+        <div class="button_wrapper">
+            <a href="./quiz.html">
+                <button class="move">クイズページへ</button>
+            </a>
+            <a href="./matching.html">
+                <button class="move">相性ページへ</button>
+            </a>
+            <a href="../index.html">
+                <button class="move">トップページへ</button>
+            </a>
+        </div>
         </div>
     </section>
 

@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS test</title>
     <link rel="stylesheet" href="../css/matching.css">
+    <link rel="shortcut icon" href="../imgs/hert.png">
+    <title>同期を覚えよう！</title>
 </head>
 
 <body>
@@ -13,17 +14,23 @@
         <span class="shutter-text">I want to match you</span>
     </div>
 
+    <audio id="opening-audio" preload="auto" playsinline>
+        <source src="../audio/matching.mp3" type="audio/mpeg">
+    </audio>
+
     <section class="container">
         <h1>相性チェック</h1>
-        <a href="./quiz.html">
-            <button class="move">クイズページへ</button>
-        </a>
-        <a href="./chat.html">
-            <button class="move">チャットページへ</button>
-        </a>
-        <a href="../index.html">
-            <button class="move">トップページへ</button>
-        </a>
+        <div class="button_wrapper">
+            <a id="button_match" href="./quiz.html">
+                <button class="move">クイズページへ</button>
+            </a>
+            <a id="button_match" href="./chat.html">
+                <button class="move">チャットページへ</button>
+            </a>
+            <a id="button_match" href="../index.html">
+                <button class="move">トップページへ</button>
+            </a>
+        </div>
     </section>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

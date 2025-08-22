@@ -9,18 +9,27 @@ $(function () {
 
     // ====== データ ======
     const dictWithScores = {
-        "竹内優貴": { value: "ありったけの夢と類まれな努力", logicalEmotional: 65, workPrivate: 65, gender: "male" },
-        "川中寛": { value: "スポーツ", logicalEmotional: 45, workPrivate: 35, gender: "male" },
-        "高城楓": { value: "言葉を尽くすこと", logicalEmotional: 80, workPrivate: 60, gender: "male" },
-        "篠塚祐貴": { value: "高い目標を達成した時の快感", logicalEmotional: 40, workPrivate: 70, gender: "male" },
-        "住野京介": { value: "ブラックコーヒー", logicalEmotional: 30, workPrivate: 55, gender: "male" },
-        "上本晃平": { value: "音楽", logicalEmotional: 20, workPrivate: 30, gender: "male" },
-        "豊永和": { value: "ルービックキューブ", logicalEmotional: 90, workPrivate: 40, gender: "male" },
-        "落合優椰": { value: "運動、自然、一人の時間", logicalEmotional: 25, workPrivate: 20, gender: "male" },
-        "高橋誠": { value: "自然の中で行うスポーツ", logicalEmotional: 35, workPrivate: 30, gender: "male" },
-        "松本雄大": { value: "夢", logicalEmotional: 20, workPrivate: 45, gender: "male" },
-        "尼田優河": { value: "花粉症の薬", logicalEmotional: 85, workPrivate: 60, gender: "female" }
+        "原亘太郎": { value: "愛する人のコミュニティ", logicalEmotional: 30, workPrivate: 25, gender: "male" },
+        "山口寛哉": { value: "水曜日のダウンタウン", logicalEmotional: 20, workPrivate: 10, gender: "male" },
+        "住野京介": { value: "ブラックコーヒー", logicalEmotional: 30, workPrivate: 55, gender: "male" }, // 既存データと整合
+        "藤田峻也": { value: "他人に応援される人間になること", logicalEmotional: 60, workPrivate: 65, gender: "male" },
+        "豊永和": { value: "ルービックキューブ", logicalEmotional: 90, workPrivate: 40, gender: "male" }, // 既存データと整合
+        "落合優椰": { value: "運動、自然、一人の時間", logicalEmotional: 25, workPrivate: 20, gender: "male" }, // 既存データと整合
+        "高橋誠": { value: "自然の中で行うスポーツ", logicalEmotional: 35, workPrivate: 30, gender: "male" }, // 既存データと整合
+        "白川善太郎": { value: "アレグラ", logicalEmotional: 70, workPrivate: 60, gender: "male" },
+        "坂優樹": { value: "目標", logicalEmotional: 35, workPrivate: 50, gender: "male" },
+        "井上雄斗": { value: "ねこ", logicalEmotional: 20, workPrivate: 20, gender: "male" },
+        "垣内志織": { value: "電動自転車", logicalEmotional: 65, workPrivate: 55, gender: "female" },
+        "山口紗英": { value: "友達や家族とおしゃべりする時間", logicalEmotional: 20, workPrivate: 15, gender: "female" },
+        "高野結衣子": { value: "健康", logicalEmotional: 70, workPrivate: 55, gender: "female" },
+        "横山未侑": { value: "旅行、ディズニーランド", logicalEmotional: 25, workPrivate: 10, gender: "female" },
+        "安達有沙": { value: "ゴルフクラブと甘いもの", logicalEmotional: 45, workPrivate: 35, gender: "female" },
+        "小櫃優紀子": { value: "家族と仲間", logicalEmotional: 25, workPrivate: 20, gender: "female" },
+        "請川文香": { value: "散歩", logicalEmotional: 40, workPrivate: 30, gender: "female" },
+        "藤堂華子": { value: "ワクワクするような経験や挑戦", logicalEmotional: 50, workPrivate: 40, gender: "female" },
+        "濱口未桜": { value: "餅", logicalEmotional: 15, workPrivate: 10, gender: "female" },
     };
+
 
     const data = $.map(dictWithScores, (rec, name) => ({
         name,
@@ -30,10 +39,39 @@ $(function () {
         gender: rec.gender || "male"
     }));
 
+    // ===== ランク別サウンド =====
+    const rankSounds = {
+        good: new Audio('../audio/TrueLove.mp3'), // S/A
+        bad: new Audio('../audio/bad.mp3')       // B/C/D
+    };
+    Object.values(rankSounds).forEach(a => {
+        a.preload = 'auto';
+        a.volume = 1;
+        try { a.setAttribute('playsinline', ''); } catch (_) { }
+    });
+
+    function stopAllRankSounds() {
+        Object.values(rankSounds).forEach(a => {
+            try { a.pause(); a.currentTime = 0; } catch (_) { }
+        });
+    }
+
+    function playRankSound(rank) {
+        const r = String(rank || '').toUpperCase();
+        const audio = (r === 'S' || r === 'A') ? rankSounds.good : rankSounds.bad;
+        stopAllRankSounds(); // 毎回1回だけ確実に鳴らす
+        try {
+            audio.currentTime = 0;
+            audio.volume = 1;
+            const p = audio.play();
+            if (p && p.catch) p.catch(() => { }); // 自動再生ブロックは黙って無視
+        } catch (_) { }
+    }
+
     // ====== SVG 基本設定 ======
-    const width = 860;
-    const height = 560;
-    const margin = { top: 50, right: 60, bottom: 110, left: 90 }; // 下に選択UIを置く分広め
+    const width = 1200;
+    const height = 800;
+    const margin = { top: 50, right: 60, bottom: 110, left: 90 };
     const innerW = width - margin.left - margin.right;
     const innerH = height - margin.top - margin.bottom;
 
@@ -44,10 +82,9 @@ $(function () {
         return $(el);
     };
 
-    // ====== コンテナ & 補助UI（選択パネル/判定ボタン/モーダル） ======
+    // ====== コンテナ & 補助UI ======
     const $chart = $('<div id="chart"></div>').appendTo('body');
 
-    // 選択パネル（カメラUIは filled 時に差し込み）
     const $panel = $(`
     <div class="pick-panel">
       <div class="slot" data-slot="0">
@@ -71,7 +108,6 @@ $(function () {
     </div>
   `).appendTo($chart);
 
-    // モーダル（ポップアップ）
     const $modal = $(`
     <div class="modal" aria-hidden="true">
       <div class="modal__backdrop"></div>
@@ -96,9 +132,11 @@ $(function () {
   `).appendTo('body');
 
     function openModal() { $modal.attr('aria-hidden', 'false').addClass('is-open'); }
-    function closeModal() { $modal.attr('aria-hidden', 'true').removeClass('is-open'); }
+    function closeModal() {
+        stopAllRankSounds();
+        $modal.attr('aria-hidden', 'true').removeClass('is-open');
+    }
     $modal.on('click', '.modal__backdrop, .modal__close', function () {
-        // モーダルを閉じても映像プレビューはスロット内なのでそのまま
         closeModal();
     });
 
@@ -115,11 +153,9 @@ $(function () {
     const $gAxes = S('g', { class: 'axes' }).appendTo($svg);
     const $gPts = S('g', { class: 'points' }).appendTo($svg);
 
-    // スケール
     const xPos = (v) => margin.left + (v / 100) * innerW;
     const yPos = (v) => margin.top + ((100 - v) / 100) * innerH;
 
-    // グリッド & 目盛
     const ticks = [0, 25, 50, 75, 100];
     $.each(ticks, (_, t) => {
         const x = xPos(t);
@@ -134,21 +170,19 @@ $(function () {
         $gAxes.append(S('text', { class: 'tick-label h', x: margin.left - 10, y: y + 4, 'text-anchor': 'end' }).text(String(t)));
     });
 
-    // 軸
     $gAxes.append(S('line', { class: 'axis', x1: margin.left, y1: height - margin.bottom, x2: width - margin.right, y2: height - margin.bottom }));
     $gAxes.append(S('line', { class: 'axis', x1: margin.left, y1: margin.top, x2: margin.left, y2: height - margin.bottom }));
 
-    // 軸ラベル
     $gAxes.append(S('text', { class: 'axis-end x-left', x: margin.left, y: height - margin.bottom + 40, 'text-anchor': 'start' }).text('感情的(0)'));
     $gAxes.append(S('text', { class: 'axis-end x-right', x: width - margin.right, y: height - margin.bottom + 40, 'text-anchor': 'end' }).text('論理的(100)'));
-    $gAxes.append(S('text', { class: 'axis-title x', x: margin.left + innerW / 2, y: height - 20, 'text-anchor': 'middle' }).text('論理的 ←→ 感情的'));
+    $gAxes.append(S('text', { class: 'axis-title x', x: margin.left + innerW / 2, y: height - 20, 'text-anchor': 'middle' }).text('感情的 ←→ 論理的'));
     $gAxes.append(S('text', { class: 'axis-end y-top', x: margin.left - 55, y: margin.top + 6, 'text-anchor': 'end' }).text('仕事(100)'));
     $gAxes.append(S('text', { class: 'axis-end y-bottom', x: margin.left - 55, y: height - margin.bottom + 6, 'text-anchor': 'end' }).text('プライベート(0)'));
     $gAxes.append(S('text', {
         class: 'axis-title y',
         transform: `translate(${24}, ${margin.top + innerH / 2}) rotate(-90)`,
         'text-anchor': 'middle'
-    }).text('仕事 ↑↓ プライベート'));
+    }).text('プライベート ←→ 仕事'));
 
     // ====== 選択ロジック ======
     const selected = [];           // [{name,value,x,y,gender,photo?,$el?}, ...]
@@ -161,9 +195,7 @@ $(function () {
             cameraStreams[slotIndex] = null;
         }
         const $slot = $panel.find(`.slot[data-slot="${slotIndex}"]`);
-        $slot.find('video').each(function () {
-            this.srcObject = null;
-        });
+        $slot.find('video').each(function () { this.srcObject = null; });
         $slot.find('.cam-capture, .cam-stop').prop('disabled', true);
         $slot.find('.cam-start').prop('disabled', false);
     }
@@ -171,50 +203,41 @@ $(function () {
     function startCamera(slotIndex) {
         const $slot = $panel.find(`.slot[data-slot="${slotIndex}"]`);
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            // カメラ非対応 → ファイル選択に誘導
             $slot.find('.file-input').trigger('click');
             return;
         }
-        navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "user" }, audio: false
-        }).then(stream => {
-            cameraStreams[slotIndex] = stream;
-            const video = $slot.find('video').get(0);
-            video.srcObject = stream;
-            video.play().catch(() => { });
-            $slot.find('.cam-capture, .cam-stop').prop('disabled', false);
-            $slot.find('.cam-start').prop('disabled', true);
-        }).catch(err => {
-            console.warn('getUserMedia error:', err);
-            // 失敗したらファイル選択へ
-            $slot.find('.file-input').trigger('click');
-        });
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+            .then(stream => {
+                cameraStreams[slotIndex] = stream;
+                const video = $slot.find('video').get(0);
+                video.srcObject = stream;
+                video.play().catch(() => { });
+                $slot.find('.cam-capture, .cam-stop').prop('disabled', false);
+                $slot.find('.cam-start').prop('disabled', true);
+            }).catch(err => {
+                console.warn('getUserMedia error:', err);
+                $slot.find('.file-input').trigger('click');
+            });
     }
 
     function capturePhoto(slotIndex) {
         const $slot = $panel.find(`.slot[data-slot="${slotIndex}"]`);
         const video = $slot.find('video').get(0);
-        if (!video || !video.videoWidth) { return; }
+        if (!video || !video.videoWidth) return;
 
         const canvas = $slot.find('canvas').get(0);
-        const w = video.videoWidth;
-        const h = video.videoHeight;
+        const w = video.videoWidth, h = video.videoHeight;
         canvas.width = w; canvas.height = h;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, w, h);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-
         setThumb(slotIndex, dataUrl);
     }
 
     function setThumb(slotIndex, dataUrl) {
         const $slot = $panel.find(`.slot[data-slot="${slotIndex}"]`);
         $slot.find('.thumb img').attr('src', dataUrl).attr('aria-hidden', 'false').show();
-
-        // 選択配列の該当要素に保存（スロットと同じ添字）
-        if (selected[slotIndex]) {
-            selected[slotIndex].photo = dataUrl;
-        }
+        if (selected[slotIndex]) selected[slotIndex].photo = dataUrl;
     }
 
     function ensureMediaUI(slotIndex, item) {
@@ -222,13 +245,11 @@ $(function () {
         const hasUI = $slot.find('.slot-media').length > 0;
 
         if (!item) {
-            // 未選択ならUIを消してカメラ停止
             stopCamera(slotIndex);
             if (hasUI) $slot.find('.slot-media').remove();
             return;
         }
         if (!hasUI) {
-            // カメラUIを生成
             $slot.find('.slot-main').append(`
         <div class="slot-media" data-slot-media="${slotIndex}">
           <div class="cam">
@@ -248,14 +269,10 @@ $(function () {
         </div>
       `);
         }
-        // 以前に撮った写真があれば反映
-        if (item.photo) {
-            setThumb(slotIndex, item.photo);
-        }
+        if (item.photo) setThumb(slotIndex, item.photo);
     }
 
     function updatePanel() {
-        // スロットに selected[0], selected[1] を差し込み
         for (let i = 0; i < 2; i++) {
             const item = selected[i];
             const $slot = $panel.find(`.slot[data-slot="${i}"]`);
@@ -270,7 +287,6 @@ $(function () {
             }
             ensureMediaUI(i, item);
         }
-        // ボタン制御
         $panel.find('.btn.judge').prop('disabled', selected.length !== 2);
     }
 
@@ -296,7 +312,6 @@ $(function () {
             const s = selected.pop();
             s.$el && s.$el.removeClass('is-selected').attr('r', 7);
         }
-        // 両スロットのカメラ停止
         stopCamera(0); stopCamera(1);
         updatePanel();
     });
@@ -318,7 +333,7 @@ $(function () {
     };
     const hideTooltip = () => $tooltip.hide();
 
-    // ====== 点を描画（genderで色分け） ======
+    // ====== 点を描画 ======
     $.each(data, function (_, d) {
         const cx = xPos(d.x);
         const cy = yPos(d.y);
@@ -383,9 +398,9 @@ $(function () {
     function buildPrompt(p1, p2) {
         return [
             `あなたは価値観の相性診断の専門家です。`,
-            `次の2人の「No ○○ No Life」の ○○ と、数値スコア（論理的-感情的, 仕事-プライベート）を踏まえ、相性を日本語で判定してください。`,
+            `次の2人の「No ○○ No Life」の ○○ と、数値スコア（論理的-感情的, 仕事-プライベート）を踏まえ、相性を関西弁で判定してください。ちょっと馬鹿にしてもいいです`,
             `出力は必ず次のJSONのみで返してください：`,
-            `{"rank":"S|A|B|C|D","work":"100字","friendship":"100字","love":"100字"}`,
+            `{"rank":"S|A|B|C|D","work":"100字以上","friendship":"100字以上","love":"100字以上"}`,
             `制約：句読点以外の記号は使わない。`,
             ``,
             `人物1: ${p1.name} / 「${p1.value}」 / 論理:${p1.x} / 仕事:${p1.y}`,
@@ -401,11 +416,12 @@ $(function () {
     }
 
     function personHTML(p) {
-        const bgStyle = p.photo ? `style="background-image:url('${p.photo}');"` : '';
-        const alt = `${p.name}の写真`;
+        const photoUrl = p.photo || "../imgs/noimage_person.jpeg";
+        const bgStyle = `style="background-image:url('${photoUrl}');"`;
+        const alt = p.photo ? `${p.name}の写真` : `${p.name}の写真（未登録：noimage）`;
         return `
       <div class="person">
-        <div class="avatar ${p.photo ? 'has-photo' : ''}" ${bgStyle} role="img" aria-label="${alt}"></div>
+        <div class="avatar has-photo" ${bgStyle} role="img" aria-label="${alt}"></div>
         <div class="person-text">${p.name}：「${p.value}」</div>
       </div>`;
     }
@@ -429,8 +445,38 @@ $(function () {
         $dims.find('.dim').eq(1).find('.dim-text').text(friendship);
         $dims.find('.dim').eq(2).find('.dim-text').text(love);
 
+        // ===== ここから追加：タイトル右にランク別ラベルを表示 =====
+        const $title = $modal.find('.modal__title');
+        $title.find('.title-badge').remove(); // 以前のラベルをクリア
+
+        let titleText = '';
+        let titleClass = '';
+        if (/^[SA]$/.test(rank)) {
+            titleText = 'TrueLove';
+            titleClass = 'is-good';
+        } else if (/^[BCD]$/.test(rank)) {
+            titleText = 'BadRelationship';
+            titleClass = 'is-bad';
+        }
+
+        if (titleText) {
+            // スペースを空けて右側に表示（HTMLは触らず append）
+            $title.append(
+                $('<span>', {
+                    class: `title-badge ${titleClass}`,
+                    text: titleText,
+                    // 見た目が未定なら簡易の最小スタイルだけ内連指定（不要なら削除OK）
+                    css: { marginLeft: '8px', fontWeight: 800 }
+                })
+            );
+        }
+        // ===== 追加ここまで =====
+
+        // モーダル即表示＆ランク別サウンド再生（シャッターは出さない方針）
         openModal();
+        playRankSound(rank);
     }
+
 
     function judgeCompatibility() {
         if (selected.length !== 2) return;
@@ -465,4 +511,57 @@ $(function () {
     $(window).on('beforeunload', function () {
         stopCamera(0); stopCamera(1);
     });
+});
+
+$(function () {
+    // 1) audio 要素を取得（無ければ動的生成）
+    var audio = document.getElementById('opening-audio');
+    if (!audio) {
+        audio = document.createElement('audio');
+        audio.id = 'opening-audio';
+        audio.preload = 'auto';
+        audio.setAttribute('playsinline', '');
+        var src = document.createElement('source');
+        src.src = './audio/opening.mp3';   // 実ファイルのパスに合わせて変更
+        src.type = 'audio/mpeg';
+        audio.appendChild(src);
+        document.body.appendChild(audio);
+    }
+
+    var $shutter = $('.shutter');
+
+    // 再生関数（確認UIなし）
+    function tryPlay() {
+        if (!audio) return;
+        audio.currentTime = 0;
+        audio.volume = 1;
+        var p = audio.play();
+        if (p && typeof p.catch === 'function') {
+            // 自動再生ブロック時だけ、最初のユーザー操作で静かに再試行
+            p.catch(function () {
+                $(document).one('pointerdown keydown', tryPlay);
+            });
+        }
+    }
+
+    // フェードアウト停止
+    function fadeOutAndPause() {
+        if (!audio) return;
+        var fade = setInterval(function () {
+            audio.volume = Math.max(0, audio.volume - 0.1);
+            if (audio.volume <= 0) {
+                audio.pause();
+                clearInterval(fade);
+            }
+        }, 100);
+    }
+
+    // 2) すでにアニメ開始済みでも鳴るよう、すぐ一度キック
+    //    （ページロード直後で animationstart を取り逃がしても対処）
+    requestAnimationFrame(tryPlay);
+
+    // 3) .shutter のアニメ開始/終了にフック（各種ベンダープレフィックス対応）
+    $shutter
+        .on('animationstart webkitAnimationStart oAnimationStart MSAnimationStart', tryPlay)
+        .on('animationend   webkitAnimationEnd   oAnimationEnd   MSAnimationEnd', fadeOutAndPause);
 });

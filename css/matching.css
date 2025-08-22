@@ -12,7 +12,7 @@ body {
   margin: 0;
   color: #ffffff;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
-  background: radial-gradient(1200px 600px at 50% -200px, #1a0f1b 0%, #0f0a12 60%);
+  background: radial-gradient(1200px 600px at 50% -200px, #F9C1CF 0%, #F9C1CF 60%);
 }
 
 .move,
@@ -105,15 +105,18 @@ a.move:focus-visible,
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  width: min(690px, 92vw);
+  width: min(1200px, 92vw);
   margin: 8vh auto 0;
   padding: 16px;
 }
 .modal__title {
   margin: 0 0 8px;
-  font-size: 20px;
+  font-size: 30px;
   font-weight: 900;
   letter-spacing: 0.01em;
+}
+.modal__pair {
+  font-size: 30px;
 }
 .modal__close {
   position: absolute;
@@ -442,9 +445,14 @@ a {
   }
 }
 
+.modal__body .rank-line {
+  font-size: 30px;
+}
+
 .modal__body .rank-badge {
   background: rgba(255, 90, 167, 0.18);
   color: #ff5aa7;
+  font-size: 30px;
 }
 
 .modal__body .dims .dim {
@@ -455,13 +463,16 @@ a {
   border-radius: 12px;
   padding: 8px 10px;
   background: rgba(255, 255, 255, 0.04);
+  margin-top: 30px;
 }
 .modal__body .dims .dim .dim-label {
   color: rgba(255, 255, 255, 0.72);
   margin-right: 4px;
+  font-size: 20px;
 }
 .modal__body .dims .dim .dim-text {
   font-weight: 700;
+  font-size: 20px;
 }
 
 /* ====== Camera UI in Slot ====== */
@@ -580,4 +591,65 @@ a {
 }
 .modal__pair .person-text {
   font-weight: 800;
+}
+
+.button_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.button_wrapper #button_match {
+  margin: 20px 20px;
+  width: 200px;
+}
+.button_wrapper #button_match button {
+  font-size: 15px;
+}
+
+/* =========================
+   SVGテキストの色・サイズ調整
+   ========================= */
+/* 好みで調整する値（色・サイズ） */
+.chart-svg {
+  /* 見やすさ改善（任意） */
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  font-smooth: always;
+  /* SVG内テキストの共通フォント（任意） */
+  /* 目盛の数字（0/25/50/75/100） */
+  /* 軸の端にある説明（例：感情的(0) / 論理的(100) / 仕事(100) / プライベート(0)） */
+  /* 軸タイトル（「論理的 ←→ 感情的」「仕事 ↑↓ プライベート」） */
+}
+.chart-svg text {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+}
+.chart-svg .tick-label {
+  fill: black;
+  font-size: clamp(14px, 1.15vw, 14px);
+  font-weight: 700;
+}
+.chart-svg .axis-end {
+  fill: black;
+  font-size: clamp(14px, 1.3vw, 16px);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.chart-svg .axis-title {
+  fill: black;
+  font-size: clamp(14px, 1.6vw, 20px);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+/* 画面幅が狭い時は少し小さめに（必要なら） */
+@media (max-width: 640px) {
+  .chart-svg .tick-label {
+    font-size: clamp(10px, 3.2vw, 12px);
+  }
+  .chart-svg .axis-end {
+    font-size: clamp(11px, 3.6vw, 14px);
+  }
+  .chart-svg .axis-title {
+    font-size: clamp(12px, 4.2vw, 18px);
+  }
 }/*# sourceMappingURL=matching.css.map */

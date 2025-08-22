@@ -1,3 +1,4 @@
+@charset "UTF-8";
 * {
   box-sizing: border-box;
 }
@@ -11,7 +12,7 @@ body {
   margin: 0;
   color: #ffffff;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
-  background: radial-gradient(1200px 600px at 50% -200px, #1a0f1b 0%, #0f0a12 60%);
+  background: radial-gradient(1200px 600px at 50% -200px, #F9C1CF 0%, #F9C1CF 60%);
 }
 
 .move,
@@ -104,15 +105,18 @@ a.move:focus-visible,
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  width: min(690px, 92vw);
+  width: min(1200px, 92vw);
   margin: 8vh auto 0;
   padding: 16px;
 }
 .modal__title {
   margin: 0 0 8px;
-  font-size: 20px;
+  font-size: 30px;
   font-weight: 900;
   letter-spacing: 0.01em;
+}
+.modal__pair {
+  font-size: 30px;
 }
 .modal__close {
   position: absolute;
@@ -297,18 +301,17 @@ a {
 
 .value {
   font-size: clamp(18px, 3.6vw, 24px);
-  color: #ffc2dd;
+  color: #EC008C;
   margin: 6px 0;
   font-weight: 800;
 }
 
-.key {
-  font-size: clamp(18px, 3.6vw, 24px);
+#key {
   margin: 6px 0;
   font-weight: 900;
 }
-.key.hide {
-  color: black;
+#key.hide {
+  color: #F9C1CF !important;
 }
 
 .button_wrapper {
@@ -362,7 +365,289 @@ a {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   width: min(800px, 92vw);
   margin: 10px auto 0;
-  padding: 12px 14px;
+  padding: 30px 20px;
   min-height: 1.8em;
   border-color: rgba(255, 90, 167, 0.35);
+  font-size: 30px;
+}
+
+.person-select {
+  margin: 12px 0 8px;
+}
+.person-select label {
+  margin-right: 8px;
+}
+.person-select select {
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+/* =============== quiz.scss 追加（indexの雰囲気に合わせる） =============== */
+/* タイトル帯：index同様の左右ハート＋グラデH1 */
+.title_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2vw, 24px);
+  margin-bottom: 14px;
+}
+.title_wrapper .title_wrapper_img {
+  width: clamp(44px, 6vw, 70px);
+}
+.title_wrapper .title_wrapper_img img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.title_wrapper .title_txt {
+  margin: 0 0 10px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  font-size: clamp(24px, 4.8vw, 40px);
+  background: linear-gradient(90deg, #ff5aa7, #ff77b7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* index側と揃える（themeにある想定） */
+  font-size: clamp(28px, 5vw, 50px);
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* コンテナ背景と余白（index準拠） */
+section.container {
+  min-height: 100vh;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F9C1CF;
+  /* indexと同トーン */
+  padding: clamp(16px, 3vw, 32px);
+}
+
+/* クイズ本文の整形 */
+.value {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 6px 0;
+  color: 0;
+  font-size: 30px;
+}
+
+.key {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 6px 0;
+  color: #EC008C;
+  font-size: 30px;
+}
+
+#gpt-opinion {
+  margin-top: 10px;
+  min-height: 1.5em;
+  color: #EC008C;
+  font-weight: bold;
+}
+
+/* セレクト行：indexのボタン高さ感と合うように */
+.person-select {
+  margin: 10px 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.person-select label {
+  color: #fff;
+  font-weight: 600;
+}
+.person-select select {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background: rgba(255, 255, 255, 0.95);
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  min-width: clamp(160px, 26vw, 240px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 4px 16px rgba(0, 0, 0, 0.06);
+  font-weight: 600;
+}
+
+/* ボタンの並びはindexと同じセンタリング＆サイズ感 */
+.button_wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(8px, 1.6vw, 16px);
+  margin-top: 18px;
+}
+.button_wrapper .img_wrapper {
+  width: clamp(120px, 18vw, 200px);
+  margin: 0 10px;
+}
+.button_wrapper .img_wrapper img {
+  width: 100%;
+  display: block;
+}
+
+/* アクションボタン類：indexの .move と統一感 */
+button.answer,
+button.next,
+button.opinion,
+button.move {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.06s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  text-decoration: none;
+  background-image: linear-gradient(90deg, rgba(255, 90, 167, 0.3), rgba(255, 119, 183, 0.26));
+  border-color: rgba(255, 90, 167, 0.55);
+  /* indexと共通のmixin（影・角丸・フォント等） */
+  background-color: #F3A1B2;
+  background-image: linear-gradient(90deg, rgba(255, 90, 167, 0.3), rgba(255, 119, 183, 0.28));
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(14px, 2.6vw, 16px);
+  padding: 14px 20px;
+  min-width: clamp(160px, 30vw, 300px);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.2s ease;
+}
+button.answer:hover,
+button.next:hover,
+button.opinion:hover,
+button.move:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06));
+  border-color: rgba(255, 255, 255, 0.3);
+}
+button.answer:active,
+button.next:active,
+button.opinion:active,
+button.move:active {
+  transform: translateY(1px) scale(0.99);
+}
+button.answer:focus-visible,
+button.next:focus-visible,
+button.opinion:focus-visible,
+button.move:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 90, 167, 0.45);
+}
+button.answer:hover,
+button.next:hover,
+button.opinion:hover,
+button.move:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+button.answer:active,
+button.next:active,
+button.opinion:active,
+button.move:active {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+
+/* indexの「3つの移動ボタン」の色差分も再現（存在する順にグラデを少し変える） */
+a:nth-of-type(1) .move {
+  background-image: linear-gradient(90deg, rgba(255, 90, 167, 0.33), rgba(255, 119, 183, 0.28));
+}
+
+a:nth-of-type(2) .move {
+  background-image: linear-gradient(90deg, rgba(255, 90, 167, 0.28), rgba(255, 194, 221, 0.3));
+}
+
+a:nth-of-type(3) .move {
+  background-image: linear-gradient(90deg, rgba(255, 90, 167, 0.26), rgba(255, 119, 183, 0.33));
+}
+
+/* シャッター演出の文字も見やすく */
+.shutter .shutter-text {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* =============================
+   ボタン hover 時のハート演出
+   ============================= */
+@keyframes heartFloat {
+  0% {
+    transform: scale(0.8) translateY(0) translateX(0);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1) translateY(-20px) translateX(-10px);
+  }
+  100% {
+    transform: scale(1.6) translateY(-120px) translateX(20px);
+    opacity: 0;
+  }
+}
+button.answer,
+button.next,
+button.opinion,
+button.move {
+  position: relative;
+  overflow: visible;
+  z-index: 0;
+}
+button.answer::before, button.answer::after,
+button.next::before,
+button.next::after,
+button.opinion::before,
+button.opinion::after,
+button.move::before,
+button.move::after {
+  content: "❤";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 28px;
+  color: rgba(255, 0, 100, 0.8);
+  opacity: 0;
+  pointer-events: none;
+}
+button.answer:hover::before,
+button.next:hover::before,
+button.opinion:hover::before,
+button.move:hover::before {
+  animation: heartFloat 1.6s ease-out forwards;
+  animation-delay: 0s;
+}
+button.answer:hover::after,
+button.next:hover::after,
+button.opinion:hover::after,
+button.move:hover::after {
+  animation: heartFloat 1.8s ease-out forwards;
+  animation-delay: 0.3s;
+}
+button.answer:hover::before,
+button.next:hover::before,
+button.opinion:hover::before,
+button.move:hover::before {
+  left: 45%;
+  font-size: 24px;
+}
+button.answer:hover::after,
+button.next:hover::after,
+button.opinion:hover::after,
+button.move:hover::after {
+  left: 55%;
+  font-size: 32px;
 }/*# sourceMappingURL=quiz.css.map */

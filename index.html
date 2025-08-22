@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./imgs/hert.png">
     <title>同期を覚えよう！</title>
     <link rel="stylesheet" href="./css/index.css">
-    <link rel="shortcut icon" href="./imgs/hert.png">
 </head>
 
 <body>
@@ -14,19 +14,53 @@
         <span class="shutter-text">Love</span>
     </div>
 
+    <audio id="opening-audio" preload="auto" playsinline>
+        <source src="./audio/Love.mp3" type="audio/mpeg">
+    </audio>
+
     <section class="container">
-        <h1>選択画面</h1>
-        <a href="./view/quiz.html">
-            <button class="move">皆の価値観を知ろう</button>
-        </a>
-        <a href="./view/matching.html">
-            <button class="move">相性マッチングをしよう</button>
-        </a>
-        <a href="./view/chat.html">
-            <button class="move">チャットページへ</button>
-        </a>
+        <div class="title_wrapper">
+            <div class="title_wrapper_img">
+                <img src="./imgs/heart1.png" alt="">
+            </div>
+            <h1 class="title_txt">同期と仲良くなるApp</h1>
+            <div class="title_wrapper_img">
+                <img src="./imgs/heart1.png" alt="">
+            </div>
+        </div>
+        <div class="button_wrapper">
+            <div class="img_wrapper">
+            </div>
+            <a href="./view/quiz.html">
+                <button class="move">皆の価値観クイズ</button>
+            </a>
+            <div class="img_wrapper">
+                <img src="./imgs/heart2.png" alt="">
+            </div>
+        </div>
+        <div class="button_wrapper">
+            <div class="img_wrapper">
+                <img src="./imgs/heart3.png" alt="">
+            </div>
+            <a href="./view/matching.html">
+                <button class="move">相性マッチング</button>
+            </a>
+            <div class="img_wrapper">
+            </div>
+        </div>
+        <div class="button_wrapper">
+            <div class="img_wrapper">
+            </div>
+            <a href="./view/chat.html">
+                <button class="move">勧誘チャット</button>
+            </a>
+            <div class="img_wrapper">
+                <img src="./imgs/heart1.png" alt="">
+            </div>
         </div>
     </section>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="./js/index.js"></script>
 </body>
 
 </html>

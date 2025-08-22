@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS test</title>
     <link rel="stylesheet" href="../css/quiz.css">
+    <link rel="shortcut icon" href="../imgs/hert.png">
+    <title>同期を覚えよう！</title>
 </head>
 
 <body>
@@ -13,27 +14,43 @@
         <span class="shutter-text">I want to know you</span>
     </div>
 
-    <section class="container">
-        <h1>人生観（Nikkeiより）</h1>
-        <h2 class="value">---</h2>
-        <h2 class="key hide">---</h2>
-        <p id="gpt-opinion" style="min-height:1.5em;"></p>
-        <div class="button_wrapper">
-            <button class="answer">Answer</button>
-            <button class="next">次の問題へ</button>
-            <button class="opinion">この考えに至った背景の推測</button>
+    <audio id="opening-audio" preload="auto" playsinline>
+        <source src="../audio/matching.mp3" type="audio/mpeg">
+    </audio>
 
-            <a href="./matching.html">
-                <button class="move">相性ページへ</button>
-            </a>
-            <a href="./chat.html">
-                <button class="move">チャットページへ</button>
-            </a>
-            <a href="../index.html">
-                <button class="move">トップページへ</button>
-            </a>
+    <section class="container">
+        <!-- ▼ 追加：index風のタイトルラッパー -->
+        <div class="title_wrapper">
+            <div class="title_wrapper_img"><img src="../imgs/heart1.png" alt=""></div>
+            <h1 class="title_txt">この人は誰？</h1>
+            <div class="title_wrapper_img"><img src="../imgs/heart1.png" alt=""></div>
+        </div>
+
+        <!-- 既存：中身はそのまま -->
+        <h2 class="value">---</h2>
+        <h2 class="key hide" id="key">---</h2>
+
+        <div class="person-select">
+            <label for="personSelect">人物を選択：</label>
+            <select id="personSelect">
+                <option value="">-- 選択してください --</option>
+            </select>
+        </div>
+
+        <p id="gpt-opinion" style="min-height:1.5em;"></p>
+
+        <div class="button_wrapper">
+            <button class="answer">回答</button>
+            <button class="next">次の方へ</button>
+            <button class="opinion">多分こんな人</button>
+        </div>
+        <div class="button_wrapper ">
+            <a href="./matching.html"><button class="move">相性ページへ</button></a>
+            <a href="./chat.html"><button class="move">チャットページへ</button></a>
+            <a href="../index.html"><button class="move">トップページへ</button></a>
         </div>
     </section>
+
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="../js/quiz.js"></script>

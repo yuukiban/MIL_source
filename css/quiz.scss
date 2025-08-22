@@ -28,18 +28,17 @@ a {
 
 .value {
     font-size: clamp(18px, 3.6vw, 24px);
-    color: $main-200;
+    color: #EC008C;
     margin: 6px 0;
     font-weight: 800;
 }
 
-.key {
-    font-size: clamp(18px, 3.6vw, 24px);
+#key {
     margin: 6px 0;
     font-weight: 900;
 
     &.hide {
-        color: black;
+        color: $chinese_pink !important;
     }
 }
 
@@ -66,7 +65,246 @@ a {
     @include card;
     width: min(800px, 92vw);
     margin: 10px auto 0;
-    padding: 12px 14px;
+    padding: 30px 20px;
     min-height: 1.8em;
     border-color: rgba($main, .35);
+    font-size: 30px;
+}
+
+.person-select {
+    margin: 12px 0 8px;
+
+    label {
+        margin-right: 8px;
+    }
+
+    select {
+        padding: 6px 8px;
+        border-radius: 6px;
+    }
+}
+
+/* =============== quiz.scss 追加（indexの雰囲気に合わせる） =============== */
+
+/* タイトル帯：index同様の左右ハート＋グラデH1 */
+.title_wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 2vw, 24px);
+    margin-bottom: 14px;
+
+    .title_wrapper_img {
+        width: clamp(44px, 6vw, 70px);
+
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    }
+
+    .title_txt {
+        @include h1-grad;
+        /* index側と揃える（themeにある想定） */
+        font-size: clamp(28px, 5vw, 50px);
+        line-height: 1.2;
+        text-align: center;
+        white-space: nowrap;
+    }
+}
+
+/* コンテナ背景と余白（index準拠） */
+section.container {
+    min-height: 100vh;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    background-color: $chinese_pink;
+    /* indexと同トーン */
+    padding: clamp(16px, 3vw, 32px);
+}
+
+/* クイズ本文の整形 */
+.value {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin: 6px 0;
+    color: red($color: #000000);
+    font-size: 30px;
+}
+
+.key {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin: 6px 0;
+    color: #EC008C;
+    font-size: 30px;
+}
+
+#gpt-opinion {
+    margin-top: 10px;
+    min-height: 1.5em;
+    color: #EC008C;
+    font-weight: bold;
+}
+
+/* セレクト行：indexのボタン高さ感と合うように */
+.person-select {
+    margin: 10px 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    label {
+        color: #fff;
+        font-weight: 600;
+    }
+
+    select {
+        appearance: none;
+        background: rgba(#fff, .95);
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        min-width: clamp(160px, 26vw, 240px);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, .05), 0 4px 16px rgba(0, 0, 0, .06);
+        font-weight: 600;
+    }
+}
+
+/* ボタンの並びはindexと同じセンタリング＆サイズ感 */
+.button_wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(8px, 1.6vw, 16px);
+    margin-top: 18px;
+
+    .img_wrapper {
+        width: clamp(120px, 18vw, 200px);
+        margin: 0 10px;
+
+        img {
+            width: 100%;
+            display: block;
+        }
+    }
+}
+
+/* アクションボタン類：indexの .move と統一感 */
+button.answer,
+button.next,
+button.opinion,
+button.move {
+    @include btn-main;
+    /* indexと共通のmixin（影・角丸・フォント等） */
+    background-color: #F3A1B2;
+    background-image: linear-gradient(90deg, rgba($main, .30), rgba($main-400, .28));
+    color: #fff;
+    font-weight: 700;
+    font-size: clamp(14px, 2.6vw, 16px);
+    padding: 14px 20px;
+    min-width: clamp(160px, 30vw, 300px);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform .1s ease, filter .2s ease;
+
+    &:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+    }
+
+    &:active {
+        transform: translateY(0);
+        filter: brightness(0.98);
+    }
+}
+
+/* indexの「3つの移動ボタン」の色差分も再現（存在する順にグラデを少し変える） */
+a:nth-of-type(1) .move {
+    background-image: linear-gradient(90deg, rgba($main, .33), rgba($main-400, .28));
+}
+
+a:nth-of-type(2) .move {
+    background-image: linear-gradient(90deg, rgba($main, .28), rgba($main-200, .30));
+}
+
+a:nth-of-type(3) .move {
+    background-image: linear-gradient(90deg, rgba($main, .26), rgba($main-400, .33));
+}
+
+/* シャッター演出の文字も見やすく */
+.shutter .shutter-text {
+    font-weight: 800;
+    letter-spacing: .04em;
+}
+
+/* =============================
+   ボタン hover 時のハート演出
+   ============================= */
+@keyframes heartFloat {
+    0% {
+        transform: scale(0.8) translateY(0) translateX(0);
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+        transform: scale(1) translateY(-20px) translateX(-10px);
+    }
+
+    100% {
+        transform: scale(1.6) translateY(-120px) translateX(20px);
+        opacity: 0;
+    }
+}
+
+button.answer,
+button.next,
+button.opinion,
+button.move {
+    position: relative;
+    overflow: visible; // ハートが外へ出ても見えるように
+    z-index: 0;
+
+    // 複数ハートを仕込む
+    &::before,
+    &::after {
+        content: "❤";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 28px;
+        color: rgba(255, 0, 100, 0.8);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    // 疑似要素2つ＋追加のspanハートをアニメーション
+    &:hover::before {
+        animation: heartFloat 1.6s ease-out forwards;
+        animation-delay: 0s;
+    }
+
+    &:hover::after {
+        animation: heartFloat 1.8s ease-out forwards;
+        animation-delay: 0.3s;
+    }
+
+    // 疑似要素以外でもさらに増やしたい場合は nth-child を活用
+    &:hover {
+        &::before {
+            left: 45%;
+            font-size: 24px;
+        }
+
+        &::after {
+            left: 55%;
+            font-size: 32px;
+        }
+    }
 }

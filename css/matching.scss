@@ -157,9 +157,14 @@ a {
 }
 
 // モーダルのランクバッジ色（ピンク基調）
+.modal__body .rank-line {
+    font-size: 30px;
+}
+
 .modal__body .rank-badge {
     background: rgba($main, .18);
     color: $main;
+    font-size: 30px;
 }
 
 .modal__body .dims .dim {
@@ -167,14 +172,17 @@ a {
     border-radius: 12px;
     padding: 8px 10px;
     background: rgba(255, 255, 255, .04);
+    margin-top: 30px;
 
     .dim-label {
         color: $muted;
         margin-right: 4px;
+        font-size: 20px;
     }
 
     .dim-text {
         font-weight: 700;
+        font-size: 20px;
     }
 }
 
@@ -280,5 +288,85 @@ a {
 
     .person-text {
         font-weight: 800;
+    }
+}
+
+.button_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    #button_match {
+        margin: 20px 20px;
+        width: 200px;
+
+        button {
+            font-size: 15px;
+        }
+    }
+}
+
+/* =========================
+   SVGテキストの色・サイズ調整
+   ========================= */
+
+/* 好みで調整する値（色・サイズ） */
+$svg-label-color: black; // 目盛数字（tick-label）
+$svg-end-color: black; // 軸端の補足（axis-end）
+$svg-title-color: black; // 軸タイトル（axis-title）
+
+$svg-label-size: clamp(14px, 1.15vw, 14px); // 目盛数字の大きさ
+$svg-end-size: clamp(14px, 1.3vw, 16px); // 軸端テキストの大きさ
+$svg-title-size: clamp(14px, 1.6vw, 20px); // 軸タイトルの大きさ
+
+.chart-svg {
+    /* 見やすさ改善（任意） */
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    font-smooth: always;
+
+    /* SVG内テキストの共通フォント（任意） */
+    text {
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+    }
+
+    /* 目盛の数字（0/25/50/75/100） */
+    .tick-label {
+        fill: $svg-label-color;
+        font-size: $svg-label-size;
+        font-weight: 700;
+    }
+
+    /* 軸の端にある説明（例：感情的(0) / 論理的(100) / 仕事(100) / プライベート(0)） */
+    .axis-end {
+        fill: $svg-end-color;
+        font-size: $svg-end-size;
+        font-weight: 800;
+        letter-spacing: .01em;
+    }
+
+    /* 軸タイトル（「論理的 ←→ 感情的」「仕事 ↑↓ プライベート」） */
+    .axis-title {
+        fill: $svg-title-color;
+        font-size: $svg-title-size;
+        font-weight: 900;
+        letter-spacing: .02em;
+    }
+}
+
+/* 画面幅が狭い時は少し小さめに（必要なら） */
+@media (max-width: 640px) {
+    .chart-svg {
+        .tick-label {
+            font-size: clamp(10px, 3.2vw, 12px);
+        }
+
+        .axis-end {
+            font-size: clamp(11px, 3.6vw, 14px);
+        }
+
+        .axis-title {
+            font-size: clamp(12px, 4.2vw, 18px);
+        }
     }
 }
